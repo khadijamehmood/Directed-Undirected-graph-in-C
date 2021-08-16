@@ -1,0 +1,898 @@
+#include<stdio.h>
+#include<conio.h>
+#include<stdlib.h>
+#include<string.h>
+struct vertex
+{
+    char data;
+    vertex*next;
+    struct edge*edgelist;
+};
+vertex*graph=NULL,*newnode,*temp,*temp2,*pv1,*pv2,*prev;
+struct edge
+{
+    vertex*v;
+    edge*next;
+};
+edge*edgenode,*tempedge,*eprev,*curr,*tempedge2;
+
+struct node
+{
+    char data;
+    node*next;
+};
+node*top=0,*top2=0,*stemp;
+
+int count,flag;
+
+void push(char a)
+{
+
+    node*newnode;
+    newnode=(node*)malloc(sizeof(node));
+    newnode->data=a;
+    newnode->next=top;
+    top=newnode;
+}
+void push2(char a)
+{
+
+    node*newnode;
+    newnode=(node*)malloc(sizeof(node));
+    newnode->data=a;
+    newnode->next=top2;
+    top2=newnode;
+}
+
+
+
+void pop()
+{
+    node*temp;
+    temp=top;
+    if(top==0)
+    {
+        return;
+    }
+    else
+    {
+        top=temp->next;
+        free(temp);
+    }
+}
+void pop2()
+{
+    node*temp;
+    temp=top2;
+    if(top2==0)
+    {
+        return;
+    }
+    else
+    {
+        top2=temp->next;
+        free(temp);
+    }
+}
+void print()
+{
+    char arr[20];
+    int i=0;
+    node*temp;
+    temp=top;
+    if(top==0)
+    {
+        printf("stack is underflow");
+    }
+    else
+    {
+        while(temp!=0)
+        {
+            arr[i]=temp->data;
+            i++;
+            temp=temp->next;
+        }
+        strrev(arr);
+        puts(arr);
+    }
+}
+
+
+
+
+
+
+
+
+
+void addvertex(char v)
+{
+    newnode=(vertex*)malloc(sizeof(vertex));
+    newnode->data=v;
+    newnode->next=NULL;
+    newnode->edgelist=NULL;
+    if(graph==NULL)
+    {
+
+        graph=newnode;
+        temp=newnode;
+    }
+    else
+    {
+        temp->next=newnode;
+        temp=newnode;
+    }
+    return;
+
+}
+void search(char v1,char v2)
+{
+    if(graph==NULL)
+    {
+        printf("NO VERTEX");
+        return;
+    }
+    else
+    {
+        temp2=graph;
+        while(temp2!=NULL)
+        {
+            if(temp2->data==v1)
+            {
+
+                pv1=temp2;
+            }
+            else if(temp2->data==v2)
+            {
+                pv2=temp2;
+            }
+            temp2=temp2->next;
+        }
+    }
+    return;
+
+}
+void addedge(char v1,char v2)
+{
+    search(v1,v2);
+    edgenode=(edge*)malloc(sizeof(edge));
+    edgenode->v=pv2;
+    edgenode->next=NULL;
+    if(pv1->edgelist==NULL)
+    {
+        pv1->edgelist=edgenode;
+    }
+    else
+    {
+        tempedge=pv1->edgelist;
+        while(tempedge->next!=NULL)
+        {
+            tempedge=tempedge->next;
+        }
+        tempedge->next=edgenode;
+    }
+    return;
+}
+void removevertex(char v1)
+{
+    if(graph==NULL)
+    {
+        printf("no vertex");
+    }
+
+    //for deleting vertex all around the graph
+    temp2=graph;
+    while(temp2!=NULL)
+    {
+        tempedge=temp2->edgelist;
+        while(tempedge!=NULL)
+        {
+            curr=tempedge;
+
+            if(tempedge->v->data==v1)
+            {
+                if(temp2->edgelist==tempedge)
+                {
+                    //printf("yes");
+                    temp2->edgelist=tempedge->next;
+
+                }
+                else
+                {
+                    eprev->next=tempedge->next;
+
+                }
+                free(curr);
+                break;
+
+            }
+            eprev=tempedge;
+            tempedge=tempedge->next;
+        }
+        temp2=temp2->next;
+    }
+    //printf("slam");
+    //now delete vertex
+    temp2=graph;
+    while(temp2->data!=v1)
+    {
+        if(temp2->next==NULL)
+        {
+            printf("VERTEX DONT FOUND");
+            return;
+        }
+        else
+        {
+            prev=temp2;
+            temp2=temp2->next;
+        }
+    }
+    while(temp2->edgelist!=NULL)
+    {
+        tempedge=temp2->edgelist;
+        temp2->edgelist=tempedge->next;
+        free(tempedge);
+    }
+    if(temp2==graph)
+    {
+        graph=temp2->next;
+        free(temp2);
+    }
+    else
+    {
+        prev->next=temp2->next;
+        temp=prev;
+        free(temp2);
+
+    }
+    return;
+
+
+
+}
+int findoutdegree(char v1)
+{
+    count=0;
+    if(graph==NULL)
+    {
+        printf("NO VERTEX");
+    }
+    else
+    {
+        temp2=graph;
+        while(temp2->data!=v1)
+        {
+            if(temp2->next==NULL)
+            {
+                printf("VERTEX NOT FOUND");
+                return 0;
+            }
+            else
+                temp2=temp2->next;
+
+        }
+        tempedge=temp2->edgelist;
+        if(tempedge==NULL)
+        {
+            count=0;
+        }
+        else
+        {
+            while(tempedge!=NULL)
+            {
+                count++;
+                tempedge=tempedge->next;
+            }
+        }
+    }
+    return count;
+}
+int findindegree(char v1)
+{
+    count=0;
+    if(graph==NULL)
+    {
+        printf("NO VERTEX");
+    }
+    else
+    {
+        temp2=graph;
+        while(temp2!=NULL)
+        {
+            tempedge=temp2->edgelist;
+            while(tempedge!=NULL)
+            {
+                if(tempedge->v->data==v1)
+                {
+                    count++;
+                }
+                tempedge=tempedge->next;
+            }
+            temp2=temp2->next;
+        }
+    }
+    return count;
+}
+void removeedge(char v1,char v2)
+{
+    edge*curr;
+    search(v1,v2);
+    //printf(" %c\t%c",pv1->data,pv2->data);
+    if(pv1->edgelist==NULL)
+    {
+        printf("NO EDGE");
+        return;
+    }
+    else
+    {
+        tempedge=pv1->edgelist;
+        while(tempedge!=NULL)
+        {
+            if(tempedge->v==pv2)
+            {
+                curr=tempedge;
+                pv1->edgelist=tempedge->next;
+                free(curr);
+                return;
+
+            }
+            tempedge=tempedge->next;
+        }
+    }
+    return;
+}
+void findpath2(edge*tempedge2)
+{
+   if(tempedge2==NULL)
+   {
+       return;
+   }
+   // printf("kol");
+        push2(tempedge2->v->data);
+        if(tempedge2->v==pv2)
+        {
+            printf("ff");
+
+            flag=2;
+            while(top2!=NULL)
+            {
+                pop2();
+            }
+
+
+        }
+        else if(tempedge2->v==pv1)
+        {
+            while(top2!=NULL)
+            {
+                pop2();
+                flag=0;
+            }
+        }
+        else
+            findpath2(tempedge2->v->edgelist);
+    pop();
+    return;
+
+}
+void findneighbours(char v)
+{
+    if(graph==NULL)
+    {
+        printf("NO GRAPH ");
+    }
+    temp2=graph;
+    while(temp2!=NULL)
+    {
+        if(temp2->data==v)
+        {
+            break;
+        }
+        if(temp2->next==NULL)
+        {
+            printf("VERTEX NOT FOUND");
+            return;
+        }
+        temp2=temp2->next;
+    }
+    tempedge=temp2->edgelist;
+    while(tempedge!=NULL)
+    {
+        printf(" %c",tempedge->v->data);
+        tempedge=tempedge->next;
+    }
+    return;
+
+}
+void findpath(edge*tempedge,char v1,char v2)
+{
+    count=0;
+    while(tempedge!=NULL)
+    {
+        push(tempedge->v->data);
+        if(tempedge->v==pv2)
+        {
+            if(flag==1)
+            {
+
+                search(v2,v1);
+                push2(pv1->data);
+                tempedge2=pv1->edgelist;
+                findpath2(tempedge2);
+
+
+            }
+            else
+            {
+                 print();
+                printf("\n");
+                pop();
+               // break;
+            }
+        }
+        else
+        {
+            stemp=top->next;
+            while(stemp!=NULL)
+            {
+                if(tempedge->v->data==stemp->data)
+                {
+                    printf("ok");
+                    count=1;
+                   // pop();
+                    break;
+                }
+                stemp=stemp->next;
+            }
+            if(count==1)
+            {
+                pop();
+            }
+            else
+                findpath(tempedge->v->edgelist,v1,v2);
+        }
+        tempedge=tempedge->next;
+    }
+    pop();
+    return;
+
+}
+
+int iscyclic(char v1,char v2)
+{
+    search(v1,v2);
+    push(pv1->data);
+    tempedge=pv1->edgelist;
+    flag=1;
+    findpath(tempedge,v1,v2);
+    return flag;
+
+}
+int isadjacent(char v1,char v2)
+{
+    search(v1,v2);
+    tempedge=pv1->edgelist;
+    if(tempedge==NULL)
+        return 0;
+    while(tempedge->v!=pv2)
+    {
+        if(tempedge->next==NULL)
+            return 0;
+        tempedge=tempedge->next;
+    }
+    return 1;
+}
+int isgrconnected(vertex*graph)
+{
+    temp=graph;
+    if(temp==NULL)
+    {
+        printf("NO GRAPH");
+    }
+    else
+    {
+        while(temp!=NULL)
+        {
+            if(temp->next==NULL)
+                break;
+           // printf(" %c",temp->data);
+            count=iscyclic(temp->data,temp->next->data);
+           //printf("2 %c",temp->data);
+            if(count==1)
+            {
+                return 0;
+            }
+            else
+                temp=temp->next;
+        }
+        return 1;
+    }
+}
+void searchvertex(char v1)
+{
+    temp2=graph;
+    if(temp2==NULL)
+    {
+        printf("GRAPH DONT EXIST");
+        return;
+    }
+    while(temp2!=NULL)
+    {
+        if(temp2->data==v1)
+        {
+            printf("FOUND");
+            return;
+        }
+        if(temp2->next==NULL)
+        {
+            printf("VERTEX NOT FOUND");
+            return;
+        }
+        temp2=temp2->next;
+    }
+    return;
+}
+void outputall()
+{
+    temp2=graph;
+    while(temp2!=NULL)
+    {
+        printf("VERTEX %c\t",temp2->data);
+        tempedge=temp2->edgelist;
+        if(tempedge==NULL)
+        {
+            printf("NO EDGES");
+        }
+        else
+        {
+            printf("EDGES\t");
+            while(tempedge!=NULL)
+            {
+                printf(" %c\t",tempedge->v->data);
+                tempedge=tempedge->next;
+            }
+        }
+        printf("\n");
+        temp2=temp2->next;
+    }
+}
+int isconnected(char v1,char v2)
+{
+    count=iscyclic(v1,v2);
+    if(count==1)
+        return 0;
+    else
+        return 1;
+}
+main()
+{
+    int a;
+    printf("1-DIRECTED GRAPH\n2-INDIRECTED GRAPH\n");
+    scanf("%d",&a);
+    int opt,c=1,x;
+    char v1,v2;
+    if(a==1)
+    {
+        while(c==1)
+        {
+            printf("\n1-ADD VERTEX\n2-ADD EDGE\n3-REMOVE VERTEX\n4-OUT DEGREE\n-IN DEGREE\n6-REMOVE EDGE:\n7-FIND PATH\n8-FIND NEIGHBOURS\n9-IS CYCLIC\n10-IS ADJACENT\n11-IS GRAPH CONNECTED\n12-IS CONNECTED\n13-SEARCH VERTEX\n14-OUTPUT ALL\n");
+            scanf("%d",&opt);
+            switch(opt)
+            {
+            case 1:
+                {
+                    printf("ENTER VERTEX:");
+                    scanf(" %c", &v1);
+                    addvertex(v1);
+                    break;
+                }
+            case 2:
+                {
+                    printf("ENTER VERTX# 01\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX #02\t");
+                    scanf(" %c",&v2);
+                    addedge(v1,v2);
+                    break;
+                }
+            case 3:
+                {
+                    printf("ENTER VERTEX YOU WANT TO DELETE:\t");
+                    scanf(" %c",&v1);
+                    removevertex(v1);
+                    break;
+                }
+            case 4:
+                {
+                    printf("ENTER VERTEX WHOSE OUT DEGREE YOU WANT OT FIND:\t");
+                    scanf(" %c",&v1);
+                    count=findoutdegree(v1);
+                    printf("%d",count);
+                    break;
+                }
+            case 5:
+                {
+                    printf("ENTER VERTEX WHOSE IN DEGREE YOU WANT TO FIND:\t");
+                    scanf(" %c",&v1);
+                    count=findindegree(v1);
+                    printf("%d",count);
+                    break;
+                }
+            case 6:
+                {
+                    printf("ENTER VERTEX 01:\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX 02:\t");
+                    scanf(" %c",&v2);
+                    removeedge(v1,v2);
+                    break;
+                }
+            case 7:
+                {
+                    printf("ENTER VERTEX 01:\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX 01:\t");
+                    scanf(" %c",&v2);
+                    search(v1,v2);
+                    //printf(" %c",pv1->data);
+                    push(pv1->data);
+                    tempedge=pv1->edgelist;
+                    flag=0;
+                    findpath(tempedge,v1,v2);
+                    break;
+                }
+            case 8:
+                {
+                    printf("ENTER VERTEX WHOSE EDGELIST YOU WANNA SEE:\t");
+                    scanf(" %c",&v1);
+                    findneighbours(v1);
+                    break;
+                }
+            case 9:
+                {
+                    printf("ENTER VERTEX 01:\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX 02:\t");
+                    scanf(" %c",&v2);
+                    x=iscyclic(v1,v2);
+                    if(x==2)
+                    {
+                        printf("IS CYCLIS GRAPH");
+                    }
+                    else
+                    {
+                        printf("not cyclic");
+                    }
+                    break;
+                }
+            case 10:
+                {
+                    printf("ENTER VERTEX 01\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX 01\t");
+                    scanf(" %c",&v2);
+                    x=isadjacent(v1,v2);
+                    if(x==1)
+                        printf("ADJACENT");
+                    else
+                        printf("NOT ADJACENT");
+                    break;
+
+                }
+            case 11:
+                {
+                    x=isgrconnected(graph);
+                    if(x==1)
+                        printf("IS CONNECTED GRAPH");
+                    else
+                        printf("NOT CONNECTED");
+                    break;
+                }
+            case 12:
+                {
+                    printf("ENTER VERTX 01:\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX 02:\t");
+                    scanf(" %c",&v2);
+                    x=isconnected(v1,v2);
+                    if(x==0)
+                    {
+                        printf("NOT CONNECTED");
+                    }
+                    else
+                    {
+                        printf("CONNECTED EDGES");
+                    }
+
+                    break;
+                }
+            case 13:
+                {
+                    printf("ENTER VERTEX YOU WANT TO SEARCH:\t");
+                    scanf(" %c",&v1);
+                    searchvertex(v1);
+                    break;
+                }
+            case 14:
+                {
+                    outputall();
+                    break;
+                }
+            }
+             printf("CONTINUE");
+            scanf("%d",&c);
+
+
+
+        }
+
+
+    }
+    if(a==2)
+    {
+        printf("INDIRECTED GRAPH\n");
+        c=1;
+        while(c==1)
+        {
+            printf("\n1-ADD VERTEX\n2-ADD EDGE\n3-REMOVE VERTEX\n4-DEGREE\n5-REMOVE EDGE:\n6-FIND PATH\n7-FIND NEIGHBOURS\n8-IS CYCLIC\n9-IS ADJACENT\n10-IS GRAPH CONNECTED\n11-IS CONNECTED\n12-SEARCH VERTEX\n13-OUTPUT ALL\n");
+            scanf("%d",&opt);
+            switch(opt)
+            {
+            case 1:
+                {
+                    printf("ENTER VERTEX:");
+                    scanf(" %c", &v1);
+                    addvertex(v1);
+                    break;
+                }
+            case 2:
+                {
+                    printf("ENTER VERTX# 01\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX #02\t");
+                    scanf(" %c",&v2);
+                    addedge(v1,v2);
+                    addedge(v2,v1);
+                    break;
+
+                }
+            case 3:
+                {
+                    printf("ENTER VERTEX YOU WANT TO DELETE:\t");
+                    scanf(" %c",&v1);
+                    removevertex(v1);
+                    break;
+
+                }
+            case 4:
+                {
+                    printf("ENTER VERTEX WHOSE DEGREE YOU WANT OT FIND:\t");
+                    scanf(" %c",&v1);
+                    count=findoutdegree(v1);
+                    printf("%d",count);
+                    break;
+
+                }
+            case 5:
+                {
+                    printf("ENTER VERTEX 01:\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX 02:\t");
+                    scanf(" %c",&v2);
+                    removeedge(v1,v2);
+                    removeedge(v1,v1);
+                    break;
+                }
+            case 6:
+                {
+                    printf("ENTER VERTEX 01:\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX 01:\t");
+                    scanf(" %c",&v2);
+                    search(v1,v2);
+                    //printf(" %c",pv1->data);
+                    push(pv1->data);
+                    tempedge=pv1->edgelist;
+                    flag=0;
+                    findpath(tempedge,v1,v2);
+                    break;
+
+                }
+            case 7:
+                {
+                    printf("ENTER VERTEX WHOSE EDGELIST YOU WANNA SEE:\t");
+                    scanf(" %c",&v1);
+                    findneighbours(v1);
+                    break;
+
+                }
+            case 8:
+                {
+                    printf("ENTER VERTEX 01:\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX 02:\t");
+                    scanf(" %c",&v2);
+                    x=iscyclic(v1,v2);
+                    if(x==2)
+                    {
+                        printf("IS CYCLIS GRAPH");
+                    }
+                    else
+                    {
+                        printf("not cyclic");
+                    }
+                    break;
+                }
+            case 9:
+                {
+                    printf("ENTER VERTEX 01\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX 01\t");
+                    scanf(" %c",&v2);
+                    x=isadjacent(v1,v2);
+                    if(x==1)
+                        printf("ADJACENT");
+                    else
+                        printf("NOT ADJACENT");
+                    break;
+                }
+            case 10:
+                {
+                    x=isgrconnected(graph);
+                    if(x==1)
+                        printf("IS CONNECTED GRAPH");
+                    else
+                        printf("NOT CONNECTED");
+                    break;
+                }
+            case 11:
+                {
+                    printf("ENTER VERTX 01:\t");
+                    scanf(" %c",&v1);
+                    printf("ENTER VERTEX 02:\t");
+                    scanf(" %c",&v2);
+                    x=isconnected(v1,v2);
+                    if(x==0)
+                    {
+                        printf("NOT CONNECTED");
+                    }
+                    else
+                    {
+                        printf("CONNECTED EDGES");
+                    }
+
+                    break;
+                }
+            case 12:
+                {
+                    printf("ENTER VERTEX YOU WANT TO SEARCH:\t");
+                    scanf(" %c",&v1);
+                    searchvertex(v1);
+                    break;
+                }
+            case 13:
+                {
+                    outputall();
+                    break;
+
+                }
+
+
+        }
+            printf("CONTINUE");
+            scanf("%d",&c);
+
+        }
+
+
+    }
+
+}
+
+
+
+
+
+
+
+
